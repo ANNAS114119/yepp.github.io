@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Internet Speed Test</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+		}
+		h1, h2 {
+			text-align: center;
+		}
+		.container {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			margin: 50px auto;
+			padding: 20px;
+			border: 2px solid #ccc;
+			border-radius: 10px;
+			width: 500px;
+		}
+		.speed {
+			font-size: 24px;
+			font-weight: bold;
+			margin-bottom: 10px;
+		}
+		.error {
+			color: red;
+			font-size: 16px;
+			margin-top: 10px;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>Internet Speed Test</h1>
+		<div class="speed"></div>
+		<div class="error"></div>
+		<button onclick="testSpeed()">Test Speed</button>
+	</div>
+	<script>
+		function testSpeed() {
+			let startTime;
+			let endTime;
+			let fileSize = 5 * 1024 * 1024; // 5 MB
+			let downloadSpeed;
+			let uploadSpeed;
+
+			// Test download speed
+			fetch("https://speed.hetzner.de/1GB.bin")
+				.then(response => {
+					startTime = performance.now();
+					return response.arrayBuffer();
+				})
+				.then(buffer => {
+					endTime = performance.now();
+					let duration = (endTime - startTime) / 1000; // seconds
+					let bitsLoaded = fileSize * 8;
+					downloadSpeed = (bitsLoaded / duration / 1000000).toFixed(2); // Mbps
+					document.querySelector(".speed").innerHTML = `Download speed: ${downloadSpeed} Mbps`;
+				})
+				.catch(error => {
+					document.querySelector(".error").innerHTML = `Error testing download speed: ${error.message}`;
+				});
+
+			// Test upload speed
+			let formData = new FormData();
+			formData.append("file", new Blob([new ArrayBuffer(fileSize)]));
+			fetch("https://ptsv2.com/t/1c6j3-1645243705/post", { method: "POST", body: formData })
+				.then(response => {
+					startTime = performance.now();
+					return response.json();
+				})
+				.then(json => {
+					endTime = performance.now();
+					let duration = (endTime - startTime) / 1000; // seconds
+					let bitsLoaded = fileSize * 8;
+					uploadSpeed = (bitsLoaded / duration / 1000000).toFixed(2); // Mbps
+					document.querySelector(".speed").innerHTML += `<br>Upload speed: ${uploadSpeed} Mbps`;
+				})
+				.catch(error => {
+					document.querySelector(".error").innerHTML = `Error testing upload speed: ${error.message}`;
+				});
+		}
+	</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
